@@ -1,6 +1,7 @@
 #include <math.h>
 #if USE_MPI
-# include <mpi.h>
+#include "mdmp_pragma_interface.h"
+#include <mpi.h>
 #endif
 #if _OPENMP
 #include <omp.h>
@@ -402,7 +403,7 @@ Domain::CreateRegionIndexSets(Int_t nr, Int_t balance)
 {
 #if USE_MPI   
    int myRank;
-   MPI_Comm_rank(MPI_COMM_WORLD, &myRank) ;
+   myRank = MDMP_GET_RANK();
    srand(myRank);
 #else
    srand(0);

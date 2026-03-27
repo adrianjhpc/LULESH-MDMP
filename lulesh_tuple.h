@@ -3,7 +3,7 @@
 #endif
 
 #if USE_MPI
-#include <mpi.h>
+#include "mdmp_pragma_interface.h"
 
 /*
    define one of these three symbols:

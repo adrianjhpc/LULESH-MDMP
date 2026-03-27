@@ -1032,7 +1032,8 @@ void CalcHourglassControlForElems(Domain& domain,
 
       /* Do a check for negative volumes */
       if ( domain.v(i) <= Real_t(0.0) ) {
-#if USE_MPI         
+#if USE_MPI
+	std::cout << "CalcHourglassControlForElems error\n";
          MPI_Abort(MPI_COMM_WORLD, VolumeError) ;
 #else
          exit(VolumeError);
@@ -1082,8 +1083,9 @@ void CalcVolumeForceForElems(Domain& domain)
 #pragma omp parallel for firstprivate(numElem)
       for ( Index_t k=0 ; k<numElem ; ++k ) {
          if (determ[k] <= Real_t(0.0)) {
-#if USE_MPI            
-            MPI_Abort(MPI_COMM_WORLD, VolumeError) ;
+#if USE_MPI
+	   std::cout << "CalcVolumeForElems Error\n";
+	   MPI_Abort(MPI_COMM_WORLD, VolumeError) ;
 #else
             exit(VolumeError);
 #endif
@@ -1597,7 +1599,8 @@ void CalcLagrangeElements(Domain& domain)
         // See if any volumes are negative, and take appropriate action.
          if (domain.vnew(k) <= Real_t(0.0))
         {
-#if USE_MPI           
+#if USE_MPI
+	  std::cout << "CalcLagrangeElements Error\n";
            MPI_Abort(MPI_COMM_WORLD, VolumeError) ;
 #else
            exit(VolumeError);
@@ -2000,8 +2003,9 @@ void CalcQForElems(Domain& domain)
       }
 
       if(idx >= 0) {
-#if USE_MPI         
-         MPI_Abort(MPI_COMM_WORLD, QStopError) ;
+#if USE_MPI
+	std::cout << "CalcQForElems Error\n";	
+	MPI_Abort(MPI_COMM_WORLD, QStopError) ;
 #else
          exit(QStopError);
 #endif
@@ -2376,7 +2380,8 @@ void ApplyMaterialPropertiesForElems(Domain& domain)
           }
           if (vc <= 0.) {
 #if USE_MPI
-             MPI_Abort(MPI_COMM_WORLD, VolumeError) ;
+	    std::cout << "ApplyMaterialPropertiesForElems Error\n";
+	    MPI_Abort(MPI_COMM_WORLD, VolumeError) ;
 #else
              exit(VolumeError);
 #endif
@@ -2668,11 +2673,10 @@ int main(int argc, char *argv[])
         exit(1);
     }
 #else
-   MPI_Init(&argc, &argv);
+   MDMP_COMM_INIT();
 #endif
-    
-   MPI_Comm_size(MPI_COMM_WORLD, &numRanks) ;
-   MPI_Comm_rank(MPI_COMM_WORLD, &myRank) ;
+  myRank = MDMP_GET_RANK();
+  numRanks = MDMP_GET_SIZE();
 #else
    numRanks = 1;
    myRank = 0;
@@ -2729,12 +2733,12 @@ int main(int argc, char *argv[])
    CommSBN(*locDom, 1, &fieldData) ;
 
    // End initialization
-   MPI_Barrier(MPI_COMM_WORLD);
+   MDMP_COMM_SYNC();
 #endif   
    
    // BEGIN timestep to solution */
 #if USE_MPI   
-   double start = MPI_Wtime();
+   double start = MDMP_WTIME();
 #else
    timeval start;
    gettimeofday(&start, NULL) ;
@@ -2759,16 +2763,19 @@ int main(int argc, char *argv[])
    // Use reduced max elapsed time
    double elapsed_time;
 #if USE_MPI   
-   elapsed_time = MPI_Wtime() - start;
+   elapsed_time = MDMP_WTIME() - start;
 #else
    timeval end;
    gettimeofday(&end, NULL) ;
    elapsed_time = (double)(end.tv_sec - start.tv_sec) + ((double)(end.tv_usec - start.tv_usec))/1000000 ;
 #endif
    double elapsed_timeG;
-#if USE_MPI   
-   MPI_Reduce(&elapsed_time, &elapsed_timeG, 1, MPI_DOUBLE,
-              MPI_MAX, 0, MPI_COMM_WORLD);
+#if USE_MPI
+   MDMP_COMMREGION_BEGIN();
+   MDMP_REDUCE(&elapsed_time, &elapsed_timeG, 1, 0, MDMP_MAX);
+   //   MPI_Reduce(&elapsed_time, &elapsed_timeG, 1, MPI_DOUBLE,
+   //              MPI_MAX, 0, MPI_COMM_WORLD);
+   MDMP_COMMREGION_END();
 #else
    elapsed_timeG = elapsed_time;
 #endif
@@ -2785,7 +2792,8 @@ int main(int argc, char *argv[])
    delete locDom; 
 
 #if USE_MPI
-   MPI_Finalize() ;
+   MDMP_COMM_FINAL();
+   //   MPI_Finalize() ;
 #endif
 
    return 0 ;

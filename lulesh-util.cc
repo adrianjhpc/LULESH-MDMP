@@ -5,6 +5,7 @@
 #include <iostream>
 #include <iomanip>
 #if USE_MPI
+#include "mdmp_pragma_interface.h"
 #include <mpi.h>
 #endif
 #include "lulesh.h"

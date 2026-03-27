@@ -3,8 +3,8 @@
 #endif
 
 #if USE_MPI
+#include "mdmp_pragma_interface.h"
 #include <mpi.h>
-
 /*
    define one of these three symbols:
 
@@ -438,8 +438,8 @@ class Domain {
    Real_t *commDataRecv ;
    
    // Maximum number of block neighbors 
-   MPI_Request recvRequest[26] ; // 6 faces + 12 edges + 8 corners 
-   MPI_Request sendRequest[26] ; // 6 faces + 12 edges + 8 corners 
+  //   MPI_Request recvRequest[26] ; // 6 faces + 12 edges + 8 corners 
+  //   MPI_Request sendRequest[26] ; // 6 faces + 12 edges + 8 corners 
 #endif
 
   private:
