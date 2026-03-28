@@ -182,10 +182,13 @@ void TimeIncrement(Domain& domain)
          gnewdt = domain.dthydro() * Real_t(2.0) / Real_t(3.0) ;
       }
 
-#if USE_MPI      
-      MPI_Allreduce(&gnewdt, &newdt, 1,
-                    ((sizeof(Real_t) == 4) ? MPI_FLOAT : MPI_DOUBLE),
-                    MPI_MIN, MPI_COMM_WORLD) ;
+#if USE_MPI
+      //MPI_Allreduce(&gnewdt, &newdt, 1,
+      //              ((sizeof(Real_t) == 4) ? MPI_FLOAT : MPI_DOUBLE),
+      //              MPI_MIN, MPI_COMM_WORLD) ;
+      MDMP_COMMREGION_BEGIN();
+      MDMP_ALLREDUCE(&gnewdt, &newdt, 1, MPI_MIN); 
+      MDMP_COMMREGION_END();     
 #else
       newdt = gnewdt;
 #endif
@@ -2772,9 +2775,7 @@ int main(int argc, char *argv[])
    double elapsed_timeG;
 #if USE_MPI
    MDMP_COMMREGION_BEGIN();
-   MDMP_REDUCE(&elapsed_time, &elapsed_timeG, 1, 0, MDMP_MAX);
-   //   MPI_Reduce(&elapsed_time, &elapsed_timeG, 1, MPI_DOUBLE,
-   //              MPI_MAX, 0, MPI_COMM_WORLD);
+   MDMP_REDUCE(&elapsed_time, &elapsed_timeG, 1, MDMP_MAX, 0);
    MDMP_COMMREGION_END();
 #else
    elapsed_timeG = elapsed_time;
