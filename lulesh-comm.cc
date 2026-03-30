@@ -5,7 +5,7 @@
 
 #include <string.h>
 
-#include "mdmp_pragma_interface.h"
+#include "mdmp_interface.h"
 
 extern "C" void mdmp_wait(int req_id);
 

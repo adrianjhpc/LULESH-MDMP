@@ -2775,7 +2775,7 @@ int main(int argc, char *argv[])
    double elapsed_timeG;
 #if USE_MPI
    MDMP_COMMREGION_BEGIN();
-   MDMP_REDUCE(&elapsed_time, &elapsed_timeG, 1, MDMP_MAX, 0);
+   MDMP_REDUCE(&elapsed_time, &elapsed_timeG, 1, 0, MDMP_MAX);
    MDMP_COMMREGION_END();
 #else
    elapsed_timeG = elapsed_time;

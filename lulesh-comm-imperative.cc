@@ -5,7 +5,7 @@
 
 #include <string.h>
 
-#include "mdmp_pragma_interface.h"
+#include "mdmp_interface.h"
 
 // Note: Explicit mdmp_wait declaration removed. 
 // The LLVM compiler pass handles wait injection automatically now!

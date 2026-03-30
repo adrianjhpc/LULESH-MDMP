@@ -1,6 +1,6 @@
 #include <math.h>
 #if USE_MPI
-#include "mdmp_pragma_interface.h"
+#include "mdmp_interface.h"
 #include <mpi.h>
 #endif
 #if _OPENMP
