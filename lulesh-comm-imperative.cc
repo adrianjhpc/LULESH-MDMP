@@ -838,8 +838,6 @@ void CommSyncPosVel(Domain& domain) {
    if (domain.numRanks() == 1)
       return ;
 
-   // mdmp_wait(-1); removed - LLVM pass intercepts memory read
-
    bool doRecv = false ; 
    Index_t xferFields = 6 ; /* x, y, z, xd, yd, zd */
    Domain_member fieldData[6] ;
