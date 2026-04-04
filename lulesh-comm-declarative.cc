@@ -187,12 +187,12 @@ void CommRecv(Domain& domain, Int_t msgType, Index_t xferFields,
 
 /******************************************/
 
-void CommSend(Domain& domain, Int_t msgType,
-              Index_t xferFields, Domain_member *fieldData,
-              Index_t dx, Index_t dy, Index_t dz, bool doSend, bool planeOnly)
+int CommSend(Domain& domain, Int_t msgType,
+             Index_t xferFields, Domain_member *fieldData,
+             Index_t dx, Index_t dy, Index_t dz, bool doSend, bool planeOnly)
 {
    if (domain.numRanks() == 1)
-      return ;
+      return -1; // Return generic wait if no comms needed
 
    int myRank = MDMP_GET_RANK() ;
    Index_t maxPlaneComm = xferFields * domain.maxPlaneSize() ;
@@ -542,17 +542,18 @@ void CommSend(Domain& domain, Int_t msgType,
       }
    }
 
-   MDMP_COMMIT();
+   return MDMP_COMMIT(); // Returns the specific batch token for this commit
 }
 
 /******************************************/
 
-void CommSBN(Domain& domain, Int_t xferFields, Domain_member *fieldData) {
+void CommSBN(Domain& domain, Int_t xferFields, Domain_member *fieldData, int batch_token) {
 
    if (domain.numRanks() == 1)
       return ;
 
-   mdmp_wait(-1);
+   // Wait specifically on the token returned by CommSend
+   mdmp_wait(batch_token);
 
    Index_t maxPlaneComm = xferFields * domain.maxPlaneSize() ;
    Index_t maxEdgeComm  = xferFields * domain.maxEdgeSize() ;
@@ -832,15 +833,15 @@ void CommSBN(Domain& domain, Int_t xferFields, Domain_member *fieldData) {
 
 /******************************************/
 
-void CommSyncPosVel(Domain& domain) {
+void CommSyncPosVel(Domain& domain, int batch_token) {
 
    if (domain.numRanks() == 1)
       return ;
 
-   // bulk wait for all active Declarative requests!
-   mdmp_wait(-1);
+   // Wait specifically on the token returned by CommSend
+   mdmp_wait(batch_token);
 
-   bool doRecv = false ; // <--- CRITICAL: Restored flag
+   bool doRecv = false ; 
    Index_t xferFields = 6 ; /* x, y, z, xd, yd, zd */
    Domain_member fieldData[6] ;
    Index_t maxPlaneComm = xferFields * domain.maxPlaneSize() ;
@@ -1118,12 +1119,13 @@ void CommSyncPosVel(Domain& domain) {
 
 /******************************************/
 
-void CommMonoQ(Domain& domain)
+void CommMonoQ(Domain& domain, int batch_token)
 {
    if (domain.numRanks() == 1)
       return ;
 
-   mdmp_wait(-1);
+   // Wait specifically on the token returned by CommSend
+   mdmp_wait(batch_token);
 
    Index_t xferFields = 3 ; /* delv_xi, delv_eta, delv_zeta */
    Domain_member fieldData[3] ;
