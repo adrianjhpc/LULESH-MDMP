@@ -979,6 +979,10 @@ static inline void CalcForceForNodes(Domain& domain)
      domain.fz(i) = Real_t(0.0) ;
   }
 
+#if USE_MPI
+  MDMP_COMMIT();
+#endif
+  
   /* Calcforce calls partial, force, hourq */
   CalcVolumeForceForElems(domain) ;
 
@@ -988,13 +992,12 @@ static inline void CalcForceForNodes(Domain& domain)
   fieldData[1] = &Domain::fy ;
   fieldData[2] = &Domain::fz ;
   
-  // ---> NEW: Store the batch token from CommSend
-  int batch_token = CommSend(domain, MSG_COMM_SBN, 3, fieldData,
+  CommSend(domain, MSG_COMM_SBN, 3, fieldData,
            domain.sizeX() + 1, domain.sizeY() + 1, domain.sizeZ() +  1,
            true, false) ;
            
-  // ---> NEW: Pass the token to the unpack function
-  CommSBN(domain, 3, fieldData, batch_token) ;
+  CommSBN(domain, 3, fieldData) ;
+  MDMP_COMMIT();
 #endif  
 }
 
@@ -1103,6 +1106,7 @@ void LagrangeNodal(Domain& domain)
    CommRecv(domain, MSG_SYNC_POS_VEL, 6,
             domain.sizeX() + 1, domain.sizeY() + 1, domain.sizeZ() + 1,
             false, false) ;
+   MDMP_COMMIT();
 #endif
 #endif
    
@@ -1121,14 +1125,13 @@ void LagrangeNodal(Domain& domain)
   fieldData[3] = &Domain::xd ;
   fieldData[4] = &Domain::yd ;
   fieldData[5] = &Domain::zd ;
-
-   // ---> NEW: Store the batch token from CommSend
-   int batch_token = CommSend(domain, MSG_SYNC_POS_VEL, 6, fieldData,
+ 
+   CommSend(domain, MSG_SYNC_POS_VEL, 6, fieldData,
             domain.sizeX() + 1, domain.sizeY() + 1, domain.sizeZ() + 1,
             false, false) ;
             
-   // ---> NEW: Pass the token to the unpack function
-   CommSyncPosVel(domain, batch_token) ;
+   CommSyncPosVel(domain);
+   MDMP_COMMIT();
 #endif
 #endif
    
@@ -1831,6 +1834,7 @@ void CalcQForElems(Domain& domain)
       CommRecv(domain, MSG_MONOQ, 3,
                domain.sizeX(), domain.sizeY(), domain.sizeZ(),
                true, true) ;
+      MDMP_COMMIT();
 #endif      
 
       /* Calculate velocity gradients */
@@ -1846,13 +1850,12 @@ void CalcQForElems(Domain& domain)
       fieldData[1] = &Domain::delv_eta ;
       fieldData[2] = &Domain::delv_zeta ;
 
-      // ---> NEW: Store the batch token from CommSend
-      int batch_token = CommSend(domain, MSG_MONOQ, 3, fieldData,
+      CommSend(domain, MSG_MONOQ, 3, fieldData,
                domain.sizeX(), domain.sizeY(), domain.sizeZ(),
                true, true) ;
 
-      // ---> NEW: Pass the token to the unpack function
-      CommMonoQ(domain, batch_token) ;
+      CommMonoQ(domain);
+      MDMP_COMMIT();
 #endif      
 
       CalcMonotonicQForElems(domain);
@@ -2488,37 +2491,38 @@ void LagrangeLeapFrog(Domain& domain)
     * material states */
    LagrangeElements(domain, domain.numElem());
 
-   int batch_token = -1;
-
 #if USE_MPI   
 #ifdef SEDOV_SYNC_POS_VEL_LATE
+   MDMP_COMMREGION_BEGIN();
    CommRecv(domain, MSG_SYNC_POS_VEL, 6,
             domain.sizeX() + 1, domain.sizeY() + 1, domain.sizeZ() + 1,
             false, false) ;
 
+   MDMP_COMMIT();
+   MDMP_COMMREGION_END();
    fieldData[0] = &Domain::x ;
    fieldData[1] = &Domain::y ;
    fieldData[2] = &Domain::z ;
    fieldData[3] = &Domain::xd ;
    fieldData[4] = &Domain::yd ;
    fieldData[5] = &Domain::zd ;
-   
-   // ---> NEW: Store the batch token from CommSend
-   batch_token = CommSend(domain, MSG_SYNC_POS_VEL, 6, fieldData,
+
+   MDMP_COMMREGION_BEGIN();
+   CommSend(domain, MSG_SYNC_POS_VEL, 6, fieldData,
             domain.sizeX() + 1, domain.sizeY() + 1, domain.sizeZ() + 1,
             false, false) ;
+   MDMP_COMMIT();
+   MDMP_COMMREGION_END();
 #endif
 #endif   
 
-   // ---> NEW: Immediate Asynchronous Overlap!
    // The CPU executes this massive physics calculation while the network 
    // transfers the SEDOV_SYNC_POS_VEL_LATE batch in the background.
    CalcTimeConstraintsForElems(domain);
 
 #if USE_MPI   
 #ifdef SEDOV_SYNC_POS_VEL_LATE
-   // ---> NEW: Pass the token to the unpack function
-   CommSyncPosVel(domain, batch_token) ;
+   CommSyncPosVel(domain);
 #endif
 #endif   
 }
@@ -2602,13 +2606,11 @@ int main(int argc, char *argv[])
             locDom->sizeX() + 1, locDom->sizeY() + 1, locDom->sizeZ() + 1,
             true, false) ;
             
-   // ---> NEW: Store the batch token from CommSend
-   int batch_token = CommSend(*locDom, MSG_COMM_SBN, 1, &fieldData,
+   CommSend(*locDom, MSG_COMM_SBN, 1, &fieldData,
             locDom->sizeX() + 1, locDom->sizeY() + 1, locDom->sizeZ() +  1,
             true, false) ;
-            
-   // ---> NEW: Pass the token to the unpack function
-   CommSBN(*locDom, 1, &fieldData, batch_token) ;
+   MDMP_COMMIT();           
+   CommSBN(*locDom, 1, &fieldData);
 
    // End initialization
    MDMP_COMM_SYNC();
