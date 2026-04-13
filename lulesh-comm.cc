@@ -42,37 +42,37 @@ void CommRecv(Domain& domain, Int_t msgType, Index_t xferFields,
    if (planeMin && doRecv) {
       int fromRank = myRank - domain.tp()*domain.tp() ;
       int recvCount = dx * dy * xferFields ;
-      MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm], recvCount, myRank, fromRank, msgType);
+      MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm], recvCount, myRank, fromRank, msgType);
       ++pmsg ;
    }
    if (planeMax) {
       int fromRank = myRank + domain.tp()*domain.tp() ;
       int recvCount = dx * dy * xferFields ;
-      MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm], recvCount, myRank, fromRank, msgType);
+      MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm], recvCount, myRank, fromRank, msgType);
       ++pmsg ;
    }
    if (rowMin && doRecv) {
       int fromRank = myRank - domain.tp() ;
       int recvCount = dx * dz * xferFields ;
-      MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm], recvCount, myRank, fromRank, msgType);
+      MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm], recvCount, myRank, fromRank, msgType);
       ++pmsg ;
    }
    if (rowMax) {
       int fromRank = myRank + domain.tp() ;
       int recvCount = dx * dz * xferFields ;
-      MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm], recvCount, myRank, fromRank, msgType);
+      MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm], recvCount, myRank, fromRank, msgType);
       ++pmsg ;
    }
    if (colMin && doRecv) {
       int fromRank = myRank - 1 ;
       int recvCount = dy * dz * xferFields ;
-      MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm], recvCount, myRank, fromRank, msgType);
+      MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm], recvCount, myRank, fromRank, msgType);
       ++pmsg ;
    }
    if (colMax) {
       int fromRank = myRank + 1 ;
       int recvCount = dy * dz * xferFields ;
-      MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm], recvCount, myRank, fromRank, msgType);
+      MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm], recvCount, myRank, fromRank, msgType);
       ++pmsg ;
    }
 
@@ -80,104 +80,104 @@ void CommRecv(Domain& domain, Int_t msgType, Index_t xferFields,
       /* receive data from domains connected only by an edge */
       if (rowMin && colMin && doRecv) {
          int fromRank = myRank - domain.tp() - 1 ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dz * xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dz * xferFields, myRank, fromRank, msgType);
          ++emsg ;
       }
       if (rowMin && planeMin && doRecv) {
          int fromRank = myRank - domain.tp()*domain.tp() - domain.tp() ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dx * xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dx * xferFields, myRank, fromRank, msgType);
          ++emsg ;
       }
       if (colMin && planeMin && doRecv) {
          int fromRank = myRank - domain.tp()*domain.tp() - 1 ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dy * xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dy * xferFields, myRank, fromRank, msgType);
          ++emsg ;
       }
       if (rowMax && colMax) {
          int fromRank = myRank + domain.tp() + 1 ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dz * xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dz * xferFields, myRank, fromRank, msgType);
          ++emsg ;
       }
       if (rowMax && planeMax) {
          int fromRank = myRank + domain.tp()*domain.tp() + domain.tp() ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dx * xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dx * xferFields, myRank, fromRank, msgType);
          ++emsg ;
       }
       if (colMax && planeMax) {
          int fromRank = myRank + domain.tp()*domain.tp() + 1 ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dy * xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dy * xferFields, myRank, fromRank, msgType);
          ++emsg ;
       }
       if (rowMax && colMin) {
          int fromRank = myRank + domain.tp() - 1 ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dz * xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dz * xferFields, myRank, fromRank, msgType);
          ++emsg ;
       }
       if (rowMin && planeMax) {
          int fromRank = myRank + domain.tp()*domain.tp() - domain.tp() ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dx * xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dx * xferFields, myRank, fromRank, msgType);
          ++emsg ;
       }
       if (colMin && planeMax) {
          int fromRank = myRank + domain.tp()*domain.tp() - 1 ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dy * xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dy * xferFields, myRank, fromRank, msgType);
          ++emsg ;
       }
       if (rowMin && colMax && doRecv) {
          int fromRank = myRank - domain.tp() + 1 ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dz * xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dz * xferFields, myRank, fromRank, msgType);
          ++emsg ;
       }
       if (rowMax && planeMin && doRecv) {
          int fromRank = myRank - domain.tp()*domain.tp() + domain.tp() ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dx * xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dx * xferFields, myRank, fromRank, msgType);
          ++emsg ;
       }
       if (colMax && planeMin && doRecv) {
          int fromRank = myRank - domain.tp()*domain.tp() + 1 ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dy * xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm], dy * xferFields, myRank, fromRank, msgType);
          ++emsg ;
       }
 
       /* receive data from domains connected only by a corner */
       if (rowMin && colMin && planeMin && doRecv) {
          int fromRank = myRank - domain.tp()*domain.tp() - domain.tp() - 1 ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL], xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL], xferFields, myRank, fromRank, msgType);
          ++cmsg ;
       }
       if (rowMin && colMin && planeMax) {
          int fromRank = myRank + domain.tp()*domain.tp() - domain.tp() - 1 ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL], xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL], xferFields, myRank, fromRank, msgType);
          ++cmsg ;
       }
       if (rowMin && colMax && planeMin && doRecv) {
          int fromRank = myRank - domain.tp()*domain.tp() - domain.tp() + 1 ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL], xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL], xferFields, myRank, fromRank, msgType);
          ++cmsg ;
       }
       if (rowMin && colMax && planeMax) {
          int fromRank = myRank + domain.tp()*domain.tp() - domain.tp() + 1 ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL], xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL], xferFields, myRank, fromRank, msgType);
          ++cmsg ;
       }
       if (rowMax && colMin && planeMin && doRecv) {
          int fromRank = myRank - domain.tp()*domain.tp() + domain.tp() - 1 ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL], xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL], xferFields, myRank, fromRank, msgType);
          ++cmsg ;
       }
       if (rowMax && colMin && planeMax) {
          int fromRank = myRank + domain.tp()*domain.tp() + domain.tp() - 1 ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL], xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL], xferFields, myRank, fromRank, msgType);
          ++cmsg ;
       }
       if (rowMax && colMax && planeMin && doRecv) {
          int fromRank = myRank - domain.tp()*domain.tp() + domain.tp() + 1 ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL], xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL], xferFields, myRank, fromRank, msgType);
          ++cmsg ;
       }
       if (rowMax && colMax && planeMax) {
          int fromRank = myRank + domain.tp()*domain.tp() + domain.tp() + 1 ;
-         MDMP_REGISTER_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL], xferFields, myRank, fromRank, msgType);
+         MDMP_RECV(&domain.commDataRecv[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL], xferFields, myRank, fromRank, msgType);
          ++cmsg ;
       }
    }
@@ -186,10 +186,11 @@ void CommRecv(Domain& domain, Int_t msgType, Index_t xferFields,
 /******************************************/
 
 void CommSend(Domain& domain, Int_t msgType,
-             Index_t xferFields, Domain_member *fieldData,
-             Index_t dx, Index_t dy, Index_t dz, bool doSend, bool planeOnly) {
+              Index_t xferFields, Domain_member *fieldData,
+              Index_t dx, Index_t dy, Index_t dz, bool doSend, bool planeOnly)
+{
    if (domain.numRanks() == 1)
-      return; 
+      return ;
 
    int myRank = MDMP_GET_RANK() ;
    Index_t maxPlaneComm = xferFields * domain.maxPlaneSize() ;
@@ -220,7 +221,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += sendCount ;
          }
          destAddr -= xferFields*sendCount ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*sendCount, myRank, myRank - domain.tp()*domain.tp(), msgType);
+         MDMP_SEND(destAddr, xferFields*sendCount, myRank, myRank - domain.tp()*domain.tp(), msgType);
          ++pmsg ;
       }
       if (planeMax && doSend) {
@@ -233,7 +234,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += sendCount ;
          }
          destAddr -= xferFields*sendCount ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*sendCount, myRank, myRank + domain.tp()*domain.tp(), msgType);
+         MDMP_SEND(destAddr, xferFields*sendCount, myRank, myRank + domain.tp()*domain.tp(), msgType);
          ++pmsg ;
       }
    }
@@ -251,7 +252,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += sendCount ;
          }
          destAddr -= xferFields*sendCount ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*sendCount, myRank, myRank - domain.tp(), msgType);
+         MDMP_SEND(destAddr, xferFields*sendCount, myRank, myRank - domain.tp(), msgType);
          ++pmsg ;
       }
       if (rowMax && doSend) {
@@ -266,7 +267,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += sendCount ;
          }
          destAddr -= xferFields*sendCount ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*sendCount, myRank, myRank + domain.tp(), msgType);
+         MDMP_SEND(destAddr, xferFields*sendCount, myRank, myRank + domain.tp(), msgType);
          ++pmsg ;
       }
    }
@@ -284,7 +285,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += sendCount ;
          }
          destAddr -= xferFields*sendCount ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*sendCount, myRank, myRank - 1, msgType);
+         MDMP_SEND(destAddr, xferFields*sendCount, myRank, myRank - 1, msgType);
          ++pmsg ;
       }
       if (colMax && doSend) {
@@ -299,7 +300,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += sendCount ;
          }
          destAddr -= xferFields*sendCount ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*sendCount, myRank, myRank + 1, msgType);
+         MDMP_SEND(destAddr, xferFields*sendCount, myRank, myRank + 1, msgType);
          ++pmsg ;
       }
    }
@@ -316,7 +317,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += dz ;
          }
          destAddr -= xferFields*dz ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*dz, myRank, toRank, msgType);
+         MDMP_SEND(destAddr, xferFields*dz, myRank, toRank, msgType);
          ++emsg ;
       }
       if (rowMin && planeMin) {
@@ -330,7 +331,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += dx ;
          }
          destAddr -= xferFields*dx ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*dx, myRank, toRank, msgType);
+         MDMP_SEND(destAddr, xferFields*dx, myRank, toRank, msgType);
          ++emsg ;
       }
       if (colMin && planeMin) {
@@ -344,7 +345,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += dy ;
          }
          destAddr -= xferFields*dy ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*dy, myRank, toRank, msgType);
+         MDMP_SEND(destAddr, xferFields*dy, myRank, toRank, msgType);
          ++emsg ;
       }
       if (rowMax && colMax && doSend) {
@@ -358,7 +359,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += dz ;
          }
          destAddr -= xferFields*dz ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*dz, myRank, toRank, msgType);
+         MDMP_SEND(destAddr, xferFields*dz, myRank, toRank, msgType);
          ++emsg ;
       }
       if (rowMax && planeMax && doSend) {
@@ -372,7 +373,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += dx ;
          }
          destAddr -= xferFields*dx ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*dx, myRank, toRank, msgType);
+         MDMP_SEND(destAddr, xferFields*dx, myRank, toRank, msgType);
          ++emsg ;
       }
       if (colMax && planeMax && doSend) {
@@ -386,7 +387,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += dy ;
          }
          destAddr -= xferFields*dy ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*dy, myRank, toRank, msgType);
+         MDMP_SEND(destAddr, xferFields*dy, myRank, toRank, msgType);
          ++emsg ;
       }
       if (rowMax && colMin && doSend) {
@@ -400,7 +401,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += dz ;
          }
          destAddr -= xferFields*dz ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*dz, myRank, toRank, msgType);
+         MDMP_SEND(destAddr, xferFields*dz, myRank, toRank, msgType);
          ++emsg ;
       }
       if (rowMin && planeMax && doSend) {
@@ -414,7 +415,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += dx ;
          }
          destAddr -= xferFields*dx ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*dx, myRank, toRank, msgType);
+         MDMP_SEND(destAddr, xferFields*dx, myRank, toRank, msgType);
          ++emsg ;
       }
       if (colMin && planeMax && doSend) {
@@ -428,7 +429,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += dy ;
          }
          destAddr -= xferFields*dy ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*dy, myRank, toRank, msgType);
+         MDMP_SEND(destAddr, xferFields*dy, myRank, toRank, msgType);
          ++emsg ;
       }
       if (rowMin && colMax) {
@@ -442,7 +443,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += dz ;
          }
          destAddr -= xferFields*dz ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*dz, myRank, toRank, msgType);
+         MDMP_SEND(destAddr, xferFields*dz, myRank, toRank, msgType);
          ++emsg ;
       }
       if (rowMax && planeMin) {
@@ -456,7 +457,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += dx ;
          }
          destAddr -= xferFields*dx ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*dx, myRank, toRank, msgType);
+         MDMP_SEND(destAddr, xferFields*dx, myRank, toRank, msgType);
          ++emsg ;
       }
       if (colMax && planeMin) {
@@ -470,7 +471,7 @@ void CommSend(Domain& domain, Int_t msgType,
             destAddr += dy ;
          }
          destAddr -= xferFields*dy ;
-         MDMP_REGISTER_SEND(destAddr, xferFields*dy, myRank, toRank, msgType);
+         MDMP_SEND(destAddr, xferFields*dy, myRank, toRank, msgType);
          ++emsg ;
       }
 
@@ -478,7 +479,7 @@ void CommSend(Domain& domain, Int_t msgType,
          int toRank = myRank - domain.tp()*domain.tp() - domain.tp() - 1 ;
          Real_t *comBuf = &domain.commDataSend[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL] ;
          for (Index_t fi=0; fi<xferFields; ++fi) comBuf[fi] = (domain.*fieldData[fi])(0) ;
-         MDMP_REGISTER_SEND(comBuf, xferFields, myRank, toRank, msgType);
+         MDMP_SEND(comBuf, xferFields, myRank, toRank, msgType);
          ++cmsg ;
       }
       if (rowMin && colMin && planeMax && doSend) {
@@ -486,7 +487,7 @@ void CommSend(Domain& domain, Int_t msgType,
          Real_t *comBuf = &domain.commDataSend[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL] ;
          Index_t idx = dx*dy*(dz - 1) ;
          for (Index_t fi=0; fi<xferFields; ++fi) comBuf[fi] = (domain.*fieldData[fi])(idx) ;
-         MDMP_REGISTER_SEND(comBuf, xferFields, myRank, toRank, msgType);
+         MDMP_SEND(comBuf, xferFields, myRank, toRank, msgType);
          ++cmsg ;
       }
       if (rowMin && colMax && planeMin) {
@@ -494,7 +495,7 @@ void CommSend(Domain& domain, Int_t msgType,
          Real_t *comBuf = &domain.commDataSend[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL] ;
          Index_t idx = dx - 1 ;
          for (Index_t fi=0; fi<xferFields; ++fi) comBuf[fi] = (domain.*fieldData[fi])(idx) ;
-         MDMP_REGISTER_SEND(comBuf, xferFields, myRank, toRank, msgType);
+         MDMP_SEND(comBuf, xferFields, myRank, toRank, msgType);
          ++cmsg ;
       }
       if (rowMin && colMax && planeMax && doSend) {
@@ -502,7 +503,7 @@ void CommSend(Domain& domain, Int_t msgType,
          Real_t *comBuf = &domain.commDataSend[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL] ;
          Index_t idx = dx*dy*(dz - 1) + (dx - 1) ;
          for (Index_t fi=0; fi<xferFields; ++fi) comBuf[fi] = (domain.*fieldData[fi])(idx) ;
-         MDMP_REGISTER_SEND(comBuf, xferFields, myRank, toRank, msgType);
+         MDMP_SEND(comBuf, xferFields, myRank, toRank, msgType);
          ++cmsg ;
       }
       if (rowMax && colMin && planeMin) {
@@ -510,7 +511,7 @@ void CommSend(Domain& domain, Int_t msgType,
          Real_t *comBuf = &domain.commDataSend[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL] ;
          Index_t idx = dx*(dy - 1) ;
          for (Index_t fi=0; fi<xferFields; ++fi) comBuf[fi] = (domain.*fieldData[fi])(idx) ;
-         MDMP_REGISTER_SEND(comBuf, xferFields, myRank, toRank, msgType);
+         MDMP_SEND(comBuf, xferFields, myRank, toRank, msgType);
          ++cmsg ;
       }
       if (rowMax && colMin && planeMax && doSend) {
@@ -518,7 +519,7 @@ void CommSend(Domain& domain, Int_t msgType,
          Real_t *comBuf = &domain.commDataSend[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL] ;
          Index_t idx = dx*dy*(dz - 1) + dx*(dy - 1) ;
          for (Index_t fi=0; fi<xferFields; ++fi) comBuf[fi] = (domain.*fieldData[fi])(idx) ;
-         MDMP_REGISTER_SEND(comBuf, xferFields, myRank, toRank, msgType);
+         MDMP_SEND(comBuf, xferFields, myRank, toRank, msgType);
          ++cmsg ;
       }
       if (rowMax && colMax && planeMin) {
@@ -526,7 +527,7 @@ void CommSend(Domain& domain, Int_t msgType,
          Real_t *comBuf = &domain.commDataSend[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL] ;
          Index_t idx = dx*dy - 1 ;
          for (Index_t fi=0; fi<xferFields; ++fi) comBuf[fi] = (domain.*fieldData[fi])(idx) ;
-         MDMP_REGISTER_SEND(comBuf, xferFields, myRank, toRank, msgType);
+         MDMP_SEND(comBuf, xferFields, myRank, toRank, msgType);
          ++cmsg ;
       }
       if (rowMax && colMax && planeMax && doSend) {
@@ -534,12 +535,12 @@ void CommSend(Domain& domain, Int_t msgType,
          Real_t *comBuf = &domain.commDataSend[pmsg * maxPlaneComm + emsg * maxEdgeComm + cmsg * CACHE_COHERENCE_PAD_REAL] ;
          Index_t idx = dx*dy*dz - 1 ;
          for (Index_t fi=0; fi<xferFields; ++fi) comBuf[fi] = (domain.*fieldData[fi])(idx) ;
-         MDMP_REGISTER_SEND(comBuf, xferFields, myRank, toRank, msgType);
+         MDMP_SEND(comBuf, xferFields, myRank, toRank, msgType);
          ++cmsg ;
       }
    }
 
-   return;
+   // MDMP_COMMIT(); removed - Imperative sends fire immediately
 }
 
 /******************************************/
@@ -1110,10 +1111,11 @@ void CommSyncPosVel(Domain& domain) {
 
 /******************************************/
 
-void CommMonoQ(Domain& domain) {
+void CommMonoQ(Domain& domain)
+{
    if (domain.numRanks() == 1)
       return ;
-   
+
    Index_t xferFields = 3 ; /* delv_xi, delv_eta, delv_zeta */
    Domain_member fieldData[3] ;
    Index_t fieldOffset[3] ;
