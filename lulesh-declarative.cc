@@ -995,9 +995,9 @@ static inline void CalcForceForNodes(Domain& domain)
   CommSend(domain, MSG_COMM_SBN, 3, fieldData,
            domain.sizeX() + 1, domain.sizeY() + 1, domain.sizeZ() +  1,
            true, false) ;
-           
-  CommSBN(domain, 3, fieldData) ;
   MDMP_COMMIT();
+    
+  CommSBN(domain, 3, fieldData) ;
 #endif  
 }
 
@@ -1129,9 +1129,8 @@ void LagrangeNodal(Domain& domain)
    CommSend(domain, MSG_SYNC_POS_VEL, 6, fieldData,
             domain.sizeX() + 1, domain.sizeY() + 1, domain.sizeZ() + 1,
             false, false) ;
-            
+   MDMP_COMMIT();    
    CommSyncPosVel(domain);
-   MDMP_COMMIT();
 #endif
 #endif
    
@@ -1853,9 +1852,8 @@ void CalcQForElems(Domain& domain)
       CommSend(domain, MSG_MONOQ, 3, fieldData,
                domain.sizeX(), domain.sizeY(), domain.sizeZ(),
                true, true) ;
-
-      CommMonoQ(domain);
       MDMP_COMMIT();
+      CommMonoQ(domain);
 #endif      
 
       CalcMonotonicQForElems(domain);

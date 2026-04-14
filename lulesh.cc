@@ -978,6 +978,10 @@ static inline void CalcForceForNodes(Domain& domain)
      domain.fy(i) = Real_t(0.0) ;
      domain.fz(i) = Real_t(0.0) ;
   }
+
+#if USE_MPI
+  MDMP_COMMIT();
+#endif
   
   /* Calcforce calls partial, force, hourq */
   CalcVolumeForceForElems(domain) ;
@@ -991,7 +995,8 @@ static inline void CalcForceForNodes(Domain& domain)
   CommSend(domain, MSG_COMM_SBN, 3, fieldData,
            domain.sizeX() + 1, domain.sizeY() + 1, domain.sizeZ() +  1,
            true, false) ;
-           
+  MDMP_COMMIT();
+    
   CommSBN(domain, 3, fieldData) ;
 #endif  
 }
@@ -1101,6 +1106,7 @@ void LagrangeNodal(Domain& domain)
    CommRecv(domain, MSG_SYNC_POS_VEL, 6,
             domain.sizeX() + 1, domain.sizeY() + 1, domain.sizeZ() + 1,
             false, false) ;
+   MDMP_COMMIT();
 #endif
 #endif
    
@@ -1123,7 +1129,7 @@ void LagrangeNodal(Domain& domain)
    CommSend(domain, MSG_SYNC_POS_VEL, 6, fieldData,
             domain.sizeX() + 1, domain.sizeY() + 1, domain.sizeZ() + 1,
             false, false) ;
-            
+   MDMP_COMMIT();    
    CommSyncPosVel(domain);
 #endif
 #endif
@@ -1827,6 +1833,7 @@ void CalcQForElems(Domain& domain)
       CommRecv(domain, MSG_MONOQ, 3,
                domain.sizeX(), domain.sizeY(), domain.sizeZ(),
                true, true) ;
+      MDMP_COMMIT();
 #endif      
 
       /* Calculate velocity gradients */
@@ -1845,7 +1852,7 @@ void CalcQForElems(Domain& domain)
       CommSend(domain, MSG_MONOQ, 3, fieldData,
                domain.sizeX(), domain.sizeY(), domain.sizeZ(),
                true, true) ;
-
+      MDMP_COMMIT();
       CommMonoQ(domain);
 #endif      
 
@@ -2484,9 +2491,13 @@ void LagrangeLeapFrog(Domain& domain)
 
 #if USE_MPI   
 #ifdef SEDOV_SYNC_POS_VEL_LATE
+   MDMP_COMMREGION_BEGIN();
    CommRecv(domain, MSG_SYNC_POS_VEL, 6,
             domain.sizeX() + 1, domain.sizeY() + 1, domain.sizeZ() + 1,
             false, false) ;
+
+   MDMP_COMMIT();
+   MDMP_COMMREGION_END();
    fieldData[0] = &Domain::x ;
    fieldData[1] = &Domain::y ;
    fieldData[2] = &Domain::z ;
@@ -2494,9 +2505,12 @@ void LagrangeLeapFrog(Domain& domain)
    fieldData[4] = &Domain::yd ;
    fieldData[5] = &Domain::zd ;
 
+   MDMP_COMMREGION_BEGIN();
    CommSend(domain, MSG_SYNC_POS_VEL, 6, fieldData,
             domain.sizeX() + 1, domain.sizeY() + 1, domain.sizeZ() + 1,
             false, false) ;
+   MDMP_COMMIT();
+   MDMP_COMMREGION_END();
 #endif
 #endif   
 
@@ -2593,6 +2607,7 @@ int main(int argc, char *argv[])
    CommSend(*locDom, MSG_COMM_SBN, 1, &fieldData,
             locDom->sizeX() + 1, locDom->sizeY() + 1, locDom->sizeZ() +  1,
             true, false) ;
+   MDMP_COMMIT();           
    CommSBN(*locDom, 1, &fieldData);
 
    // End initialization
